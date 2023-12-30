@@ -1,0 +1,43 @@
+service: tipadvisor-backend
+org: erinmoconnor1
+app: tipadvisor
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: default
+  stage: dev
+  region: us-east-1
+
+functions:
+  calculateTip:
+    handler: handler.calculateTip
+    events:
+      - http:
+          path: calculate-tip
+          method: post
+  submitData:
+    handler: handler.submitData
+    events:
+      - http:
+          path: submit-data
+          method: post
+resources:
+  Resources:
+    TipadvisorTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TipadvisorTable
+        AttributeDefinitions:
+          - AttributeName: ratingId
+            AttributeType: N
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: ratingId
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
